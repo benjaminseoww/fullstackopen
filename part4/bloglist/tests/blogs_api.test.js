@@ -35,7 +35,7 @@ describe("verify blog data keys", () => {
     })
 })
 
-describe.only("POST /api/blogs", () => {
+describe("POST /api/blogs", () => {
     test("blog is added to database", async () => {
         const newBlog = {
             title: 'Go To Statement Considered Harmful',
@@ -68,7 +68,7 @@ describe.only("POST /api/blogs", () => {
         assert.strictEqual(response.body.likes, 0);
     });
 
-    test.only("missing title or url returns 400", async () => {
+    test("missing title or url returns 400", async () => {
         const newBlog = {
             title: 'Go To Statement Considered Harmful',
             author: 'Edsger W. Dijkstra',
@@ -79,3 +79,23 @@ describe.only("POST /api/blogs", () => {
         await api.post('/api/blogs').send(newBlog).expect(400);
     });
 })
+
+describe("DELETE /api/blogs/:id", () => {
+    test("deleted a blog successfully returns 204", async() => {
+
+    });
+
+    test("deleted a blog with invalid id returns 400", async() => {
+
+    });
+});
+
+describe("PUT /api/blogs/:id", () => {
+    test("updating a blog's likes successfully", async() => {
+
+    });
+
+    test("updating a blog with invalid id returns 400", async() => {
+
+    });
+});
