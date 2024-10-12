@@ -7,11 +7,15 @@ const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
 
+let blogs_id = [];
+
 beforeEach(async () => {
     await Blog.deleteMany({});
+    blogs_id = [];
     const blogObjects = api_test_helper.initialBlogs.map(blog => new Blog(blog));
     const blogArray = blogObjects.map(blog => blog.save());
     await Promise.all(blogArray);
+    blogArray.forEach(promise => promise.then(blog => blogs_id.push(blog._id.toString())));
 })
 
 describe("GET /api/blogs", () => {
@@ -42,7 +46,7 @@ describe("POST /api/blogs", () => {
             author: 'Edsger W. Dijkstra',
             url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
             likes: 5
-          };
+        };
         
         // test posting
         await api
@@ -82,20 +86,30 @@ describe("POST /api/blogs", () => {
 
 describe("DELETE /api/blogs/:id", () => {
     test("deleted a blog successfully returns 204", async() => {
-
+        const id_to_delete = blogs_id[0];
+        await api.delete('/api/blogs/' + id_to_delete).expect(204);
+        const response = await api.get('/api/blogs');
+        assert.strictEqual(response.body.length, api_test_helper.initialBlogs.length - 1);
+        assert.strictEqual(response.body.map(blog => blog.id).includes(id_to_delete), false);
     });
 
     test("deleted a blog with invalid id returns 400", async() => {
-
+        await api.delete('/api/blogs/ab123456cd654321ef').expect(400);
     });
 });
 
 describe("PUT /api/blogs/:id", () => {
-    test("updating a blog's likes successfully", async() => {
+    const updatedBlog = {
+        likes: 554
+    }
 
+    test("updating a blog's likes successfully", async() => {
+        const id_to_update = blogs_id[0];
+        const response = await api.put('/api/blogs/' + id_to_update).send(updatedBlog).expect(200);
+        assert.strictEqual(response.body.likes, updatedBlog.likes);
     });
 
     test("updating a blog with invalid id returns 400", async() => {
-
+        await api.put('/api/blogs/ab123456cd654321ef').send(updatedBlog).expect(400);
     });
 });
