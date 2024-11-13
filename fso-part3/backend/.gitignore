@@ -1,0 +1,7 @@
+node_modules/
+requests/
+dist/
+
+.env
+.env.production
+

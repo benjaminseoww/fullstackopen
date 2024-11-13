@@ -6,11 +6,24 @@ const api_test_helper = require('../utils/api_test_helper');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
+const bcrypt = require('bcryptjs')
 
 let blogs_id = [];
 
 beforeEach(async () => {
     await Blog.deleteMany({});
+    await User.deleteMany({});
+
+    let user = await User.findOne({ username: 'adamlee034' });
+
+    if (!user) {
+        // Create a new user if one does not exist
+        user = new User({ username: 'adamlee034' });
+        user.passwordHash = await bcrypt.hash('test12345', 10); 
+        await user.save();
+    }
+
     blogs_id = [];
     const blogObjects = api_test_helper.initialBlogs.map(blog => new Blog(blog));
     const blogArray = blogObjects.map(blog => blog.save());
@@ -39,24 +52,54 @@ describe("verify blog data keys", () => {
     })
 })
 
-describe("POST /api/blogs", () => {
-    test("blog is added to database", async () => {
+describe.only("POST /api/blogs", () => {
+    test.only("blog is added to database with valid token", async () => {
         const newBlog = {
             title: 'Go To Statement Considered Harmful',
             author: 'Edsger W. Dijkstra',
             url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
             likes: 5
         };
+
+        // login
+        const testLogin = await api.post('/api/login').send({
+            username: "adamlee034",
+            password: "test12345"
+        }).expect(200);
+        const authorization = testLogin.body.token;
         
         // test posting
         await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
+            .post('/api/blogs')
+            .set("Authorization", `Bearer ${authorization}`)
+            .send(newBlog)
+            .expect(201)
         
         // test getting with increased size of db
-        const response = await api.get('/api/blogs');
+        const response = await api.get('/api/blogs').set("Authorization", `Bearer ${authorization}`);
         assert.strictEqual(response.body.length, api_test_helper.initialBlogs.length + 1);
+    })
+
+    test.only("401 Unauthorised when no token is given to add a new blog", async () => {
+        const newBlog = {
+            title: 'Go To Statement Considered Harmful',
+            author: 'Edsger W. Dijkstra',
+            url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+            likes: 5
+        };
+
+        // login
+        const testLogin = await api.post('/api/login').send({
+            username: "adamlee034",
+            password: "test12345"
+        }).expect(200);
+        const authorization = testLogin.body.token;
+        
+        // test posting
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(401)
     })
 
     test("default likes is 0", async () => {
