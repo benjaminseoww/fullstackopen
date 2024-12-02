@@ -7,15 +7,13 @@ export default class loginService {
   static async login(usernameString: string, passwordString: string) {
     console.log(baseUrl);
 
-    try {
-      const response = await axios.post(baseUrl, { 
-          username: usernameString, 
-          password: passwordString 
-      })
 
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await axios.post(baseUrl, { 
+        username: usernameString, 
+        password: passwordString 
+    })
+
+    return response.data;
+
   }
 }

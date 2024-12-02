@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import {BlogProps, Blog} from './components/Blog.tsx'
-import {NotificationProps, Notification} from './components/Notification.tsx'
+import { BlogProps, Blog } from './components/Blog.tsx'
+import { NotificationProps, Notification } from './components/Notification.tsx'
+import BlogCreateForm from './components/BlogCreateForm.tsx'
 import blogServices from './services/blog.ts'
 import loginServices from './services/login.ts'
+import AltToggable from './components/AltToggable.tsx'
 
 interface User {
   name: string,
@@ -12,14 +14,15 @@ interface User {
 
 export default function App() {
   const [blogs, setBlogs] = useState<Array<BlogProps>>([])
+  const [blogChanged, setBlogChanged] = useState<boolean>(false) // ensure no infinite loop for getting all blogs
   const [user, setUser] = useState<User | null>(null)
   const [notification, setNotification] = useState<NotificationProps | null>(null)
 
   useEffect(() => {
     blogServices.getAllBlogs().then((blogs : Array<BlogProps>) =>
-      setBlogs( blogs )
+      setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
     )  
-  }, [blogs])
+  }, [blogChanged])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
@@ -38,7 +41,8 @@ export default function App() {
     }, 5000)
   }
 
-  // event handlers
+  // event handlers 
+  // login
   const handleLogin = async(event : React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const formElems = event.currentTarget.elements as typeof event.currentTarget.elements & {
@@ -61,26 +65,29 @@ export default function App() {
     } 
   }
 
+  // logout
   const handleLogout = () => {
     setUser(null)
     window.localStorage.removeItem('loggedNoteappUser')
   }
 
-  const handleCreateBlog = async(event : React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const formElems = event.currentTarget.elements as typeof event.currentTarget.elements & {
-        title: HTMLInputElement,
-        author: HTMLInputElement,
-        url: HTMLInputElement
-    }
-    const title = formElems.title.value
-    const author = formElems.author.value
-    const url = formElems.url.value
-
+  // blog creation
+  const handleCreateBlog = async (title: string, author: string, url: string) => {
     const response = await blogServices.createBlog(title, author, url)
     setBlogs(blogs.concat(response))
-
     notify(`a new blog ${response.title} by ${response.author} added`, 'success')
+  }
+
+  // blog likes
+  const handleLike = async (id: string) => {
+    await blogServices.likeBlog(id)
+    setBlogChanged(!blogChanged)
+  }
+
+  // blog deletion
+  const handleDelete = async (id: string) => {
+    await blogServices.deleteBlog(id)
+    setBlogChanged(!blogChanged)
   }
 
   if (user === null) {
@@ -113,25 +120,16 @@ export default function App() {
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </p>
-      <h2>create new</h2>
-      <form onSubmit={handleCreateBlog}>
-          <div>
-            <label htmlFor="title">title: </label>
-            <input type="text" name="title" required />
-          </div>
-          <div>
-            <label htmlFor="author">author: </label>
-            <input type="text" name="author" required />
-          </div>
-          <div>
-            <label htmlFor="url">url: </label>
-            <input type="text" name="url" required />
-          </div>
-          <div>
-            <input type="submit" value="create" />
-          </div>
-        </form>
-      {blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
+      <AltToggable showButtonLabel='new note'>
+        <BlogCreateForm handleCreateBlog={handleCreateBlog} />
+      </AltToggable>
+      {blogs.map((blog) => {
+        blog.likeFunction = handleLike
+        blog.deleteFunction = handleDelete
+        return (
+          <Blog key={blog.id} blog={blog} />
+        )
+      })}
     </div>
   )
 }

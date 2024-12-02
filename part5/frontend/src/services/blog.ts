@@ -21,4 +21,18 @@ async function createBlog(title: string, author: string, url: string) {
     return request.then(response => response.data)
 }
 
-export default { getAllBlogs, setToken,  createBlog}
+async function likeBlog(id: string) {
+    const request = axios.put(baseUrl + "/" + id, {incrementLikes: 1}, {
+        headers: { authorization: token }
+    })
+    return request.then(response => response.data)
+}
+
+async function deleteBlog(id: string) {
+    const request = axios.delete(baseUrl + "/" + id, {
+        headers: { authorization: token }
+    })
+    return request.then(response => response.data)
+}
+
+export default { getAllBlogs, setToken, createBlog, likeBlog, deleteBlog }

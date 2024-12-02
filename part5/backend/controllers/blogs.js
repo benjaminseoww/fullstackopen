@@ -11,6 +11,13 @@ router.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+router.get('/:id', async (request, response) => {
+  const blogs = await Blog
+    .findById(request.params.id)
+
+  response.json(blogs)
+})
+
 router.post('/', userExtractor, async (request, response) => {
   const blog = new Blog(request.body)
 
@@ -58,12 +65,15 @@ router.delete('/:id', userExtractor, async (request, response) => {
 
 router.put('/:id', async (request, response) => {
   const body = request.body
+  const blog = await Blog.findById(request.params.id)
 
-  const blog = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes
+  if (body.incrementLikes !== null) {
+    blog.likes += body.incrementLikes
+  } else {
+    blog.title = body.title
+    blog.author = body.author
+    blog.url = body.url
+    blog.likes = body.likes
   }
 
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
