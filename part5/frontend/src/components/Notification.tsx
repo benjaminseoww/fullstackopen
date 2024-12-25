@@ -19,7 +19,7 @@ export function Notification({ notification } : { notification: NotificationProp
     }
 
     return (
-        <div style={style}>
+        <div style={style} id="notification">
             {notification.message}
         </div>  
     );

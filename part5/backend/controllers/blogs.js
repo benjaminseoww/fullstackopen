@@ -67,13 +67,12 @@ router.put('/:id', async (request, response) => {
   const body = request.body
   const blog = await Blog.findById(request.params.id)
 
-  if (body.incrementLikes !== null) {
-    blog.likes += body.incrementLikes
-  } else {
-    blog.title = body.title
-    blog.author = body.author
-    blog.url = body.url
-    blog.likes = body.likes
+  for (const key in body) {
+    if (key === 'incrementLikes') {
+      blog.likes += body.incrementLikes
+    } else {
+      blog[key] = body[key]
+    }
   }
 
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })

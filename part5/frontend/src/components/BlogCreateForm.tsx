@@ -25,15 +25,15 @@ function BlogCreateForm(props: BlogCreateFormProps) {
             <form onSubmit={createBlog}>
                 <div>
                     <label htmlFor="title">title: </label>
-                    <input type="text" name="title" required />
+                    <input type="text" id="title" name="title" required />
                 </div>
                 <div>
                     <label htmlFor="author">author: </label>
-                    <input type="text" name="author" required />
+                    <input type="text" id="author" name="author" required />
                 </div>
                 <div>
                     <label htmlFor="url">url: </label>
-                    <input type="text" name="url" required />
+                    <input type="text" id="url" name="url" required />
                 </div>
                 <div>
                     <input type="submit" value="create" />

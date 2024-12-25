@@ -118,7 +118,7 @@ export default function App() {
       {notification != null && <Notification notification={notification} />}
       <p>
         {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
+        <button id="logout-button" onClick={handleLogout}>logout</button>
       </p>
       <AltToggable showButtonLabel='new note'>
         <BlogCreateForm handleCreateBlog={handleCreateBlog} />
@@ -127,7 +127,7 @@ export default function App() {
         blog.likeFunction = handleLike
         blog.deleteFunction = handleDelete
         return (
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} user={user} />
         )
       })}
     </div>
