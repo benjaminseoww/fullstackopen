@@ -1,21 +1,33 @@
-import { voteAnecdote } from '../reducers/anecdoteReducer'
 import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from '../store'
+import type { RootState, AppDispatch } from '../store'
+import { showNotification } from '../reducers/notificationReducer'
+import { useEffect } from 'react'
+import { initializeAnecdotes, voteAnecdoteAction } from '../reducers/anecdoteReducer'
+
 
 const AnecdoteList = () => {
     const anecdotes = useSelector((state : RootState) => state.anecdotes)
-    const dispatch = useDispatch()
+    const filter = useSelector((state : RootState) => state.filter)
+    const dispatch = useDispatch() as AppDispatch
+
+    useEffect(() => {
+        dispatch(initializeAnecdotes())
+    }, [])
   
     const vote = (event : React.MouseEvent<HTMLButtonElement>, id : string) => {
       console.log('vote', id)
       event.preventDefault()
-      dispatch(voteAnecdote({id: id}))
+      const anecdote = anecdotes.find(a => a.id === id)
+      dispatch(voteAnecdoteAction(id))
+      dispatch(showNotification(`You voted for '${anecdote?.content}'`, 5))
     }
 
     return (
         <>
             {anecdotes
-                .slice().sort((a, b) => b.votes - a.votes)
+                .slice()
+                .filter(a => a.content.toLowerCase().includes(filter.toLowerCase()))
+                .sort((a, b) => b.votes - a.votes)
                 .map(anecdote =>
                 <div key={anecdote.id}>
                 <div>
