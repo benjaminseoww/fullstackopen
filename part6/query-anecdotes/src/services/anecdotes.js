@@ -15,15 +15,11 @@ const asObject = (anecdote) => {
 // axio service functions
 const getAll = () => axios.get(baseUrl).then(response => response.data)
 
-const createNew = (content) => axios.post(baseUrl, asObject(content)).then(response => response.data)
+const createNew = (content) => {
+    const anecdote = asObject(content)
+    return axios.post(baseUrl, anecdote).then(response => response.data)
+  }
 
 const vote = (id) => axios.get(`${baseUrl}/${id}`).then(response => axios.put(`${baseUrl}/${id}`, { ...response.data, votes: response.data.votes + 1 }).then(response => response.data))
-
-// async (id) => {
-//   const anecdote = await axios.get(`${baseUrl}/${id}`)
-//   const updatedAnecdote = { ...anecdote.data, votes: anecdote.data.votes + 1 }
-//   const response = await axios.put(`${baseUrl}/${id}`, updatedAnecdote)
-//   return response.data
-// }
 
 export default { getAll, createNew, vote }

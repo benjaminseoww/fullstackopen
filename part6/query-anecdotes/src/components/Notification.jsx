@@ -9,13 +9,12 @@ const Notification = () => {
     marginBottom: 5
   }
 
-  const notification = useContext(NotificationContext)
-  const isNotificationNull = notification === null
+  const [notification, notificationDispatch] = useContext(NotificationContext)
+  const isNotificationEmpty = notification === null
 
-  if (isNotificationNull) {
+  if (isNotificationEmpty) {
     return null
   }
-  
   return (
     <div style={style}>
       {notification}
