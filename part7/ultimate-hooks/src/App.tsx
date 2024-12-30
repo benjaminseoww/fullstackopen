@@ -30,6 +30,7 @@ const useField = (type : string) => {
 
 const useResource = (baseUrl : string) => {
   const [resources, setResources] = useState<Resource[]>([])
+  const [hasChanged, setHasChanged] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -37,12 +38,12 @@ const useResource = (baseUrl : string) => {
       setResources(response.data)
     }
     fetch()
-  }, [resources])
+  }, [hasChanged])
 
   const create = (resource : Omit<Note, "id"> | Omit<Person, "id">) => {
     const newResource = { ...resource, id: resources.length + 1 } as Resource
     axios.post(baseUrl, newResource)
-    setResources(resources.concat(newResource))
+    setHasChanged(!hasChanged)
   }
 
   const service = {
