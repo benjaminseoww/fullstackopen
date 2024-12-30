@@ -14,6 +14,11 @@ async function getAllBlogs() {
   return request.then((response) => response.data);
 }
 
+async function getBlog(id: string) {
+  const request = axios.get(baseUrl + "/" + id);
+  return request.then((response) => response.data);
+}
+
 async function createBlog(title: string, author: string, url: string) {
   const request = axios.post(
     baseUrl,
@@ -43,4 +48,4 @@ async function deleteBlog(id: string) {
   return request.then((response) => response.data);
 }
 
-export default { getAllBlogs, setToken, createBlog, likeBlog, deleteBlog };
+export default { getAllBlogs, getBlog, setToken, createBlog, likeBlog, deleteBlog };

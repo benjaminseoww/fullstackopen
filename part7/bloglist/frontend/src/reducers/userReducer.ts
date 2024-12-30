@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { AppDispatch } from '../store'
 import loginService from '../services/login';
 
-const initialState = null as User | null
+const initialState = null as User | null;
 
 export interface User {
     name: string;

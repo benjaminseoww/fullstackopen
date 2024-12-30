@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 import type { RootState } from '../store'
 
-export interface NotificationProps {
+interface NotificationProps {
   message: string;
   type: string;
 }

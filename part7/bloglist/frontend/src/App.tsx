@@ -10,7 +10,7 @@ import blogServices from "./services/blog.ts";
 import { useDispatch, useSelector } from 'react-redux'
 import type { AppDispatch, RootState } from './store'
 import { showNotification } from "./reducers/notificationReducer.ts";
-import { initialiseBlogs, createNew, likeBlog, deleteBlog } from "./reducers/blogsReducer.ts";
+import { initialiseBlogs, createNew, deleteBlog } from "./reducers/blogsReducer.ts";
 import { login, logout, setUser } from "./reducers/userReducer.ts";
 
 export default function App() {
@@ -74,11 +74,6 @@ export default function App() {
     );
   };
 
-  // blog likes
-  const handleLike = async (id: string) => {
-    dispatch(likeBlog(id))
-  };
-
   // blog deletion
   const handleDelete = async (id: string) => {
     dispatch(deleteBlog(id))
@@ -122,7 +117,6 @@ export default function App() {
       {blogs.slice().map((blog) => {
         const newBlog = {
           ...blog,
-          likeFunction: handleLike,
           deleteFunction: handleDelete,
         }
         return <Blog key={newBlog.id} blog={newBlog} user={user} />;
