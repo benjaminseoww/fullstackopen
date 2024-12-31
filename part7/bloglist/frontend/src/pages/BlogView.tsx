@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Notification } from '../components/Notification'
+import NavBar from '../components/NavBar'
 
 import blogServices from '../services/blog'
 import userServices from '../services/users'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../store'
-import { logout, setUser } from '../reducers/userReducer'
+import { setUser } from '../reducers/userReducer'
 
 import { useNavigate, useParams } from "react-router";
 import { likeBlog } from '../reducers/blogsReducer'
@@ -25,6 +26,7 @@ interface BlogProps {
   likes: number;
   user: string;
   id: string;
+  comments: string[] | [];
 }
 
 export default function BlogView() {
@@ -45,12 +47,6 @@ export default function BlogView() {
             blogServices.setToken(userInfo.token);
         }
     }, []);
-
-
-    const handleLogout = () => {
-        dispatch(logout())
-        navigate('/')
-    };
 
     // get blog info
     useEffect(() => {
@@ -79,6 +75,25 @@ export default function BlogView() {
         }
       };
 
+    // handle comments
+    const handleCommentSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const formElems = event.currentTarget
+            .elements as typeof event.currentTarget.elements & {
+            comment: HTMLInputElement;
+        };
+        const comment = formElems.comment.value;
+
+        if (id) {
+            await blogServices.addComment(id, comment)
+
+            await blogServices.getBlog(id).then(blog => {
+                setBlogInfo(blog)
+            })
+        }
+    }
+
     if (!user) {
         return (
             <p>you are not logged in</p>
@@ -87,23 +102,32 @@ export default function BlogView() {
 
     return (
          <div>
-            <h2>blogs</h2>
-            <Notification />
-            <p>
-                {user.name} logged in
-                <button id="logout-button" onClick={handleLogout}>
-                    logout
-                </button>
-            </p>
-            {
-                blogInfo ? 
-                <div>
-                    <h2>{blogInfo.title} by {blogInfo.author}</h2>
-                    <p>{blogInfo.url}</p>
-                    <p>{blogInfo.likes} likes <button onClick={incrementLikes}>like</button></p>
-                    <p>added by {userInfo?.name}</p>
-                </div> : <>no such blog</>
-            }
+            <NavBar/>
+            <div className="container px-8">
+                <Notification />
+                <h2 className="text-2xl font-bold">blogs app</h2>
+                {
+                    blogInfo ? 
+                    <div>
+                        <div>
+                            <h2 className="text-2xl font-bold">{blogInfo.title} by {blogInfo.author}</h2>
+                            <p>{blogInfo.url}</p>
+                            <p>{blogInfo.likes} likes <button className="rounded-lg border-2 bg-gray-200 px-3" onClick={incrementLikes}>like</button></p>
+                            <p>added by {userInfo?.name}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold">comments</h3>
+                            <form onSubmit={handleCommentSubmit}>
+                                <input className="border-2" type="text" name="comment" placeholder="comment" />
+                                <button className="rounded-md border-2 bg-gray-200 px-3">add comment</button>
+                            </form>
+                            {blogInfo.comments && blogInfo.comments.map((comment, index) => {
+                                return <li key={index}>{comment}</li>
+                            })}
+                        </div>
+                    </div> : <>no such blog</>
+                }
+            </div>
         </div>
     )
 }

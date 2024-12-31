@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Notification } from '../components/Notification'
+import NavBar from '../components/NavBar'
 
 import userServices from '../services/users'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../store'
-import { logout, setUser } from '../reducers/userReducer'
+import { setUser } from '../reducers/userReducer'
 
 import { useNavigate, useParams } from "react-router";
 
@@ -41,12 +42,6 @@ export default function User() {
         }
     }, []);
 
-
-    const handleLogout = () => {
-        dispatch(logout())
-        navigate('/')
-    };
-
     // get user info
     useEffect(() => {
         if (id) {
@@ -64,21 +59,17 @@ export default function User() {
 
     return (
          <div>
-            <h2>blogs</h2>
-            <Notification />
-            <p>
-                {user.name} logged in
-                <button id="logout-button" onClick={handleLogout}>
-                    logout
-                </button>
-            </p>
-            <h2>{userInfo?.name}</h2>
-            <h3>added blogs</h3>
-            <ul>
-                {userInfo?.blogs.map(blog => (
-                    <li key={blog.id}>{blog.title}</li>
-                ))}
-            </ul>
+            <NavBar/>
+            <div className="container px-8">
+                <Notification />
+                <h2 className="text-2xl font-bold">{userInfo?.name}</h2>
+                <h3 className="text-lg font-bold">added blogs</h3>
+                <ul>
+                    {userInfo?.blogs.map(blog => (
+                        <li key={blog.id}>{blog.title}</li>
+                    ))}
+                </ul>
+            </div>
         </div>
     )
 }

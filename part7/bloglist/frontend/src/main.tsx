@@ -5,6 +5,7 @@ import App from "./App.tsx";
 import UsersList from "./pages/UsersList.tsx";
 import UserView from "./pages/UserView.tsx";
 import BlogView from "./pages/BlogView.tsx";
+import "./index.css";
 
 import { store } from './store'
 import { Provider } from 'react-redux'

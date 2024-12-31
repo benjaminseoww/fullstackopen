@@ -18,11 +18,11 @@ export default function AltToggable(props: AltToggableProps) {
   return (
     <>
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{props.showButtonLabel}</button>
+        <button className="rounded-lg border-2 bg-gray-200 px-4" onClick={toggleVisibility}>{props.showButtonLabel}</button>
       </div>
       <div style={showWhenVisible}>
         {props.children}
-        <button onClick={toggleVisibility}>cancel</button>
+        <button className="rounded-lg border-2 bg-gray-200 px-4" onClick={toggleVisibility}>cancel</button>
       </div>
     </>
   );

@@ -19,6 +19,11 @@ async function getBlog(id: string) {
   return request.then((response) => response.data);
 }
 
+async function getComments(id: string) {
+  const request = axios.get(baseUrl + "/" + id + "/comments");
+  return request.then((response) => response.data);
+}
+
 async function createBlog(title: string, author: string, url: string) {
   const request = axios.post(
     baseUrl,
@@ -28,6 +33,18 @@ async function createBlog(title: string, author: string, url: string) {
     },
   );
   return request.then((response) => response.data);
+}
+
+async function addComment(id: string, comment: string) {
+  const request = axios.post(
+    baseUrl + "/" + id + "/comments",
+    { comment },
+    {
+      headers: { authorization: token },
+    },
+  );
+  return request.then((response) => response.data);
+
 }
 
 async function likeBlog(id: string) {
@@ -48,4 +65,4 @@ async function deleteBlog(id: string) {
   return request.then((response) => response.data);
 }
 
-export default { getAllBlogs, getBlog, setToken, createBlog, likeBlog, deleteBlog };
+export default { getAllBlogs, getBlog, getComments, addComment, setToken, createBlog, likeBlog, deleteBlog };

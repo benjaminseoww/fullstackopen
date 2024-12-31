@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Notification } from '../components/Notification'
+import NavBar from '../components/NavBar'
 
 import userServices from '../services/users'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../store'
-import { logout, setUser } from '../reducers/userReducer'
+import { setUser } from '../reducers/userReducer'
 
 import { useNavigate, Link } from "react-router";
 
@@ -41,12 +42,6 @@ export default function UsersList() {
         }
     }, []);
 
-
-    const handleLogout = () => {
-        dispatch(logout())
-        navigate('/')
-    };
-
     // fetching users in db
     useEffect(() => {
         userServices.getAll().then(users => {
@@ -62,31 +57,27 @@ export default function UsersList() {
 
     return (
         <div>
-            <h2>blogs</h2>
-            <Notification />
-            <p>
-                {user.name} logged in
-                <button id="logout-button" onClick={handleLogout}>
-                    logout
-                </button>
-            </p>
-            <h2>Users</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>blogs created</th>
-                </tr>
-                </thead>
-                <tbody>
-                {users.map(user => (
-                    <tr key={user.id}>
-                        <td><Link to={user.id}>{user.name}</Link></td>
-                        <td>{user.blogs.length}</td>
+            <NavBar />
+            <div className="container px-8">
+                <Notification />
+                <h2 className="text-2xl font-bold" >Users</h2>
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>blogs created</th>
                     </tr>
-                ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {users.map(user => (
+                        <tr key={user.id}>
+                            <td><Link className="text-blue-600" to={user.id}>{user.name}</Link></td>
+                            <td>{user.blogs.length}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }

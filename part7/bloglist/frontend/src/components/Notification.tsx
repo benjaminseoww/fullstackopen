@@ -16,6 +16,7 @@ export function Notification() {
 
   const style = {
     color: notification.type === "error" ? "red" : "green",
+    borderColor: notification.type === "error" ? "red" : "green",
     background: "lightgrey",
     fontSize: 20,
     borderStyle: "solid",

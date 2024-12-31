@@ -21,14 +21,8 @@ export interface BlogProps {
 
 export const Blog = ({
   blog,
-  user,
 }: {
   blog: BlogProps;
-  user: {
-    name: string;
-    token: string;
-    username: string;
-  };
 }) => {
 
   const blogStyle = {
@@ -41,7 +35,7 @@ export const Blog = ({
 
   return (
     <div style={blogStyle} className="blog">
-      <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+      <Link className="text-blue-600" to={`/blogs/${blog.id}`}>{blog.title}</Link>
     </div>
   );
 };

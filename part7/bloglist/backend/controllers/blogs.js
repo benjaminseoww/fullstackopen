@@ -18,6 +18,13 @@ router.get('/:id', async (request, response) => {
   response.json(blogs)
 })
 
+router.get('/:id/comments', async (request, response) => {
+  const blog = await Blog
+    .findById(request.params.id)
+
+  response.json(blog.comments)
+})
+
 router.post('/', userExtractor, async (request, response) => {
   const blog = new Blog(request.body)
 
@@ -77,6 +84,25 @@ router.put('/:id', async (request, response) => {
 
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
   response.json(updatedBlog)
+})
+
+router.post('/:id/comments', async (request, response) => {
+  const blog = await Blog
+    .findById(request.params.id)
+
+  if (!blog) {
+    return response.status(404).json({ error: 'blog not found' })
+  }
+
+  if (!blog.comments) {
+    blog.comments = []
+  }
+
+  blog.comments = blog.comments.concat(request.body.comment)
+
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  response.json(updatedBlog)
+  
 })
 
 module.exports = router
